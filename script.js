@@ -6,10 +6,44 @@ const preco = document.getElementById("preco");
 const quantidade = document.getElementById("quantidade");
 const imagem = document.getElementById("imagem");
 const produtoForm = document.getElementById("produto-form");
+const notificacao = document.getElementById("notificacao-conteudo");
+
+//escondendo a notificação ate que a função seja chamada
+notificacao.style.display = 'none';
 
 //listas para armazenar os dados do formulário
 const categorias = [];
 const produtos = [];
+
+//função para exibir uma notificação
+function exibirNotificacao(mensagem, status){
+    //armazenando e variaveis a div e o spam que guardam a mensagem de notificação
+    const messageEl = document.getElementById("notificacao-mensagem");
+
+    //o textContent ele é responsável por alterar o texto guardado no messageEl,
+    //ou seja, o que esta dentro do span la no HTML
+    messageEl.textContent = mensagem;
+
+    //verifica o status da mensagem para estilizar o elemento exibido
+    if(status === 'sucesso'){
+        notificacao.style.backgroundColor = '#dbead5';
+        messageEl.style.color = '#103900';
+    }else if(status === 'alerta'){
+        notificacao.style.backgroundColor = '#ffffa0';
+        messageEl.style.color = '#646600';
+    }else if(status == 'erro'){
+        notificacao.style.backgroundColor = '#fb6866';
+        messageEl.style.color = '#470300';
+    }
+
+    notificacao.style.display = 'block';
+
+    //esconde a notificacao depois de 3 segundos
+    setTimeout(() => {
+        notificacao.style.display = 'none';
+    }, 3000);
+
+}
 
 //manipulando o evento de submit do formulário
 produtoForm.addEventListener("submit", (event) => {
@@ -70,4 +104,10 @@ produtoForm.addEventListener("submit", (event) => {
     //guardando a lista no localstorage, transformando os dados para 
     // json usando o JSON.stringify
     localStorage.setItem("nomeProduto", JSON.stringify(produtos));
+
+    //limpando os campos do formulário
+    produtoForm.reset();
+
+    exibirNotificacao(`Produto adicionado com sucesso!`, 'sucesso');
+    
 });
