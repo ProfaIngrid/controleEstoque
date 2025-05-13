@@ -7,6 +7,7 @@ const quantidade = document.getElementById("quantidade");
 const imagem = document.getElementById("imagem");
 const produtoForm = document.getElementById("produto-form");
 const notificacao = document.getElementById("notificacao-conteudo");
+const tbody = document.getElementById("produtos-lista");
 
 //escondendo a notificação ate que a função seja chamada
 notificacao.style.display = 'none';
@@ -45,10 +46,7 @@ function exibirNotificacao(mensagem, status){
 
 }
 
-//manipulando o evento de submit do formulário
-produtoForm.addEventListener("submit", (event) => {
-    //impedir de recarregar a página quando o evento de submit(envio) for chamado 
-    event.preventDefault();
+function verificaCampos() {
     let camposPreenchidos = true;
 
     //valida se o campo nome esta vazio e exibe uma mensagem
@@ -89,6 +87,16 @@ produtoForm.addEventListener("submit", (event) => {
         return
     }
 
+    exibirNotificacao(`Produto adicionado com sucesso!`, 'sucesso');
+}
+
+//manipulando o evento de submit do formulário
+produtoForm.addEventListener("submit", (event) => {
+    //impedir de recarregar a página quando o evento de submit(envio) for chamado 
+    event.preventDefault();
+
+    verificaCampos();
+
     //criando um objeto para armazenar os dados do formulário
     const produtoInserido = {
         nome: nome.value,
@@ -97,17 +105,42 @@ produtoForm.addEventListener("submit", (event) => {
         quantidade: quantidade.value,
         imagem: imagem.value 
     }
+    
+    //pegando dos produtos que já foram salvos no localstorage
+    let produtosSalvos = JSON.parse(localStorage.getItem("nomeProduto")) || [];
 
     //aguardando esses dados novos na lista
-    produtos.push(produtoInserido);
+    produtosSalvos.push(produtoInserido);
 
     //guardando a lista no localstorage, transformando os dados para 
     // json usando o JSON.stringify
-    localStorage.setItem("nomeProduto", JSON.stringify(produtos));
+    localStorage.setItem("nomeProduto", JSON.stringify(produtosSalvos));
 
     //limpando os campos do formulário
     produtoForm.reset();
-
-    exibirNotificacao(`Produto adicionado com sucesso!`, 'sucesso');
     
 });
+
+
+
+function adicionarItemTabela() {
+    let produtos = JSON.parse(localStorage.getItem("nomeProduto")) || [];
+
+    let valoresTabela = '';
+
+    produtos.forEach(produto => {
+        console.log(produto);
+        valoresTabela += `
+            <tr>
+                <td></td>
+                <td>${produto.nome}</td>
+                <td>${produto.categoria}</td>
+                <td>${produto.preco}</td>
+                <td>${produto.quantidade}</td> 
+            </tr>
+        `
+    });
+
+    tbody.innerHTML = valoresTabela
+}
+
